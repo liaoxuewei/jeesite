@@ -70,17 +70,24 @@
 			READ_FLAG,
 			READ_DATE
 		)
-		<foreach collection="list" item="e" separator=" UNION ALL ">
-			SELECT
-				#{e.id},
+		<if test="list.get(0).dbName == 'oracle'">
+			<foreach collection="list" item="e" separator=" union all ">
+				SELECT #{e.id},
 				#{e.oaNotify.id},
 				#{e.user.id},
 				#{e.readFlag},
-				#{e.readDate}
-			<if test="dbName != 'mssql'">
-			FROM dual
-			</if>
-		</foreach>
+				#{e.readDate} FROM dual
+			</foreach>
+		</if>
+		<if test="list.get(0).dbName == 'mssql' or list.get(0).dbName == 'mysql'"> VALUES  
+		    <foreach collection="list" item="e" open="" separator="," close="">  
+				(#{e.id},
+				#{e.oaNotify.id},
+				#{e.user.id},
+				#{e.readFlag},
+				#{e.readDate})
+			</foreach>
+	    </if>
 	</insert>
 	
 	<update id="update">
